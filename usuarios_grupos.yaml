@@ -1,0 +1,33 @@
+---
+- name: Trabajar con Uusarios y Grupos
+  hosts: rocky9
+
+  tasks:
+    - name: Crear el grupo 'grupo_prueba'
+      ansible.builtin.group:
+        name: "grupo_prueba"
+        state: present
+      become: true
+
+    - name: Crear usuario 'usu_prueba' y asignar grupo 'grupo_prueba'
+      ansible.builtin.user:
+        name: usu_prueba
+        group: grupo_prueba
+        # groups: "otros_grupos" # En caso de querer agregar a otros grupos 'append: true'
+      become: true
+
+    - name: Consultar detalles del grupo 'grupo_prueba'
+      ansible.builtin.getent:
+        database: group
+        key: "grupo_prueba"
+      register: detalles_grupo
+
+    - name: Consultar detalles del usuario 'usu_prueba'
+      ansible.builtin.getent:
+        database: passwd
+        key: "usu_prueba"
+      register: detalles_usuario
+
+    - name: Mostrar detalles
+      ansible.builtin.debug:
+        var: detalles_usuario
